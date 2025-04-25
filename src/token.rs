@@ -12,94 +12,71 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::{fmt, num::ParseIntError};
+
 use logos::Logos;
 
-#[derive(Logos, Debug, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq)]
+pub enum LexicalError {
+    InvalidInteger(ParseIntError),
+    #[default]
+    InvalidToken,
+}
+
+impl From<ParseIntError> for LexicalError {
+    fn from(err: ParseIntError) -> Self {
+        LexicalError::InvalidInteger(err)
+    }
+}
+
+#[derive(Logos, Clone, Debug, PartialEq)]
+#[logos(skip r"[ \t\n\f]+", skip r"#.*\n?", error = LexicalError)]
 pub enum Token {
     // Keywords
-    #[token("let")]
-    Let,
+    #[token("var")]
+    Var,
 
-    #[token("fn")]
-    Fn,
-
-    #[token("return")]
-    Return,
-
-    #[token("if")]
-    If,
-
-    #[token("else")]
-    Else,
-
-    #[token("while")]
-    While,
-
-    #[token("true")]
-    True,
-
-    #[token("false")]
-    False,
-
-    #[token("null")]
-    Null,
+    #[token("print")]
+    Print,
 
     // Identifier
-    #[regex(r"[a-zA-Z_][a-zA-Z0-9_]*")]
-    Identifier,
+    #[regex("[_a-zA-Z][_0-9a-zA-Z]*", |lex| lex.slice().to_string())]
+    Identifier(String),
 
     // Literals
-    #[regex(r"\d+")]
-    IntegerLiteral,
-
-    #[regex(r#""([^"\\]|\\.)*""#)]
-    StringLiteral,
-
-    // Operators
-    #[token("+")]
-    Plus,
-
-    #[token("-")]
-    Minus,
-
-    #[token("*")]
-    Multiply,
-
-    #[token("/")]
-    Divide,
-
-    #[token("<")]
-    LessThan,
-
-    #[token(">")]
-    GreaterThan,
-
-    #[token("=")]
-    Equal,
-
-    #[token("==")]
-    EqualEqual,
-
-    #[token("!=")]
-    NotEqual,
+    #[regex("[1-9][0-9]*", |lex| lex.slice().parse())]
+    Integer(i64),
 
     #[token("(")]
-    LeftParen,
+    LParen,
 
     #[token(")")]
-    RightParen,
+    RParen,
 
-    #[token("{")]
-    LeftBrace,
-
-    #[token("}")]
-    RightBrace,
+    #[token("=")]
+    Assign,
 
     #[token(";")]
     Semicolon,
 
-    #[regex(r"[ \t\n\r]+", logos::skip)]
-    Whitespace,
+    // Operators
+    #[token("+")]
+    Add,
+
+    #[token("-")]
+    Sub,
+
+    #[token("*")]
+    Mul,
+
+    #[token("/")]
+    Div,
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 #[cfg(test)]
@@ -109,36 +86,27 @@ mod test {
     use super::Token;
 
     #[test]
-    fn test_let_integer() {
-        let mut lexer = Token::lexer("let x = 42;");
+    fn test_var() {
+        let mut lexer = Token::lexer("var x = 42;");
 
-        assert_eq!(lexer.next(), Some(Ok(Token::Let)));
+        assert_eq!(lexer.next(), Some(Ok(Token::Var)));
 
-        assert_eq!(lexer.next(), Some(Ok(Token::Identifier)));
-        assert_eq!(lexer.slice(), "x");
-
-        assert_eq!(lexer.next(), Some(Ok(Token::Equal)));
-
-        assert_eq!(lexer.next(), Some(Ok(Token::IntegerLiteral)));
-        assert_eq!(lexer.slice(), "42");
-
+        assert_eq!(lexer.next(), Some(Ok(Token::Identifier(String::from("x")))));
+        assert_eq!(lexer.next(), Some(Ok(Token::Assign)));
+        assert_eq!(lexer.next(), Some(Ok(Token::Integer(42))));
         assert_eq!(lexer.next(), Some(Ok(Token::Semicolon)));
     }
 
     #[test]
-    fn test_let_string() {
-        let mut lexer = Token::lexer(r#"let y = "Hello";"#);
+    fn test_print() {
+        let mut lexer = Token::lexer("print(1 + 2);");
 
-        assert_eq!(lexer.next(), Some(Ok(Token::Let)));
-
-        assert_eq!(lexer.next(), Some(Ok(Token::Identifier)));
-        assert_eq!(lexer.slice(), "y");
-
-        assert_eq!(lexer.next(), Some(Ok(Token::Equal)));
-
-        assert_eq!(lexer.next(), Some(Ok(Token::StringLiteral)));
-        assert_eq!(lexer.slice(), "\"Hello\"");
-
+        assert_eq!(lexer.next(), Some(Ok(Token::Print)));
+        assert_eq!(lexer.next(), Some(Ok(Token::LParen)));
+        assert_eq!(lexer.next(), Some(Ok(Token::Integer(1))));
+        assert_eq!(lexer.next(), Some(Ok(Token::Add)));
+        assert_eq!(lexer.next(), Some(Ok(Token::Integer(2))));
+        assert_eq!(lexer.next(), Some(Ok(Token::RParen)));
         assert_eq!(lexer.next(), Some(Ok(Token::Semicolon)));
     }
 }
