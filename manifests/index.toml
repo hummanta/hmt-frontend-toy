@@ -1,0 +1,17 @@
+name = "hmt-frontend-toy"
+homepage = "https://hummanta.github.io/hmt-frontend-toy"
+repository = "https://github.com/hummanta/hmt-frontend-toy"
+language = "Toy"
+kind = "frontend"
+description = "Parsing the Toy source code and generating the Cranelift IR"
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+]
+latest = "v0.1.0"
+
+[releases]
+"v0.1.0" = "release-v0.1.0.toml"
