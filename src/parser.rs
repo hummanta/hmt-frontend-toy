@@ -14,11 +14,7 @@
 
 use lalrpop_util::{lalrpop_mod, ErrorRecovery};
 
-use crate::{
-    ast::Program,
-    lexer::Lexer,
-    token::{LexicalError, Token},
-};
+use crate::{ast::Program, error::LexicalError, lexer::Lexer, token::Token};
 
 lalrpop_mod!(grammar);
 
@@ -41,11 +37,7 @@ pub fn parse(source: &str) -> Result<Program, Vec<ErrorRecovery<usize, Token, Le
 mod test {
     use lalrpop_util::{ErrorRecovery, ParseError};
 
-    use crate::{
-        ast::*,
-        parser,
-        token::{LexicalError, Token},
-    };
+    use crate::{ast::*, error::LexicalError, parser, token::Token};
 
     #[test]
     fn test_parse_var() -> Result<(), Vec<ErrorRecovery<usize, Token, LexicalError>>> {

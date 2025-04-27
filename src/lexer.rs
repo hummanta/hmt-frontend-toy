@@ -14,7 +14,7 @@
 
 use logos::{Logos, SpannedIter};
 
-use crate::token::{LexicalError, Token};
+use crate::{error::LexicalError, token::Token};
 
 pub type Spanned<Tok, Loc, Error> = Result<(Loc, Tok, Loc), Error>;
 

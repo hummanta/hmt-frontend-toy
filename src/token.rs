@@ -12,22 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{fmt, num::ParseIntError};
+use std::fmt;
 
 use logos::Logos;
 
-#[derive(Default, Debug, Clone, PartialEq)]
-pub enum LexicalError {
-    InvalidInteger(ParseIntError),
-    #[default]
-    InvalidToken,
-}
-
-impl From<ParseIntError> for LexicalError {
-    fn from(err: ParseIntError) -> Self {
-        LexicalError::InvalidInteger(err)
-    }
-}
+use crate::error::LexicalError;
 
 #[derive(Logos, Clone, Debug, PartialEq)]
 #[logos(skip r"[ \t\n\f]+", skip r"#.*\n?", error = LexicalError)]

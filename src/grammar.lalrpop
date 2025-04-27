@@ -1,5 +1,6 @@
 use crate::ast;
-use crate::token::{LexicalError, Token};
+use crate::error::LexicalError;
+use crate::token::Token;
 use lalrpop_util::ErrorRecovery;
 
 grammar<'err>(errors: &'err mut [ErrorRecovery<usize, Token, LexicalError>]);

@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod ast;
-pub mod error;
-pub mod lexer;
-pub mod parser;
-pub mod token;
+use std::num::ParseIntError;
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub enum LexicalError {
+    InvalidInteger(ParseIntError),
+    #[default]
+    InvalidToken,
+}
+
+impl From<ParseIntError> for LexicalError {
+    fn from(err: ParseIntError) -> Self {
+        LexicalError::InvalidInteger(err)
+    }
+}
