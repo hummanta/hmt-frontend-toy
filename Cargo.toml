@@ -5,6 +5,8 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
+ariadne = { version = "0.5.1", features = ["auto-color"] }
+concolor = "0.1.1"
 lalrpop-util = "0.22.1"
 logos = "0.15.0"
 

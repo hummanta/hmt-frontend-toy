@@ -17,6 +17,7 @@ use std::{
     num::ParseIntError,
 };
 
+use ariadne::{Report, ReportKind, Source};
 use lalrpop_util::{ErrorRecovery, ParseError as LalrpopParseError};
 
 #[derive(Default, Debug, Clone, PartialEq)]
@@ -55,6 +56,24 @@ impl ParseError {
     pub fn note<T: ToString>(mut self, note: T) -> Self {
         self.note.replace(note.to_string());
         self
+    }
+
+    pub fn report(&self, source: &str) -> std::io::Result<String> {
+        let mut report = Report::build(ReportKind::Error, 0..0).with_message(&self.message);
+
+        if let Some(note) = &self.note {
+            report = report.with_note(note);
+        }
+
+        let mut bytes = Vec::new();
+        report.finish().write(Source::from(source), &mut bytes)?;
+
+        let string = unsafe {
+            // SAFETY: We known that the bytes are valid UTF-8
+            String::from_utf8_unchecked(bytes)
+        };
+
+        Ok(string)
     }
 }
 
