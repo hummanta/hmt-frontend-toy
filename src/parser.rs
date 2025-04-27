@@ -12,25 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use lalrpop_util::lalrpop_mod;
+use lalrpop_util::{lalrpop_mod, ErrorRecovery};
 
-use crate::{ast::Program, lexer::Lexer};
+use crate::{
+    ast::Program,
+    lexer::Lexer,
+    token::{LexicalError, Token},
+};
 
 lalrpop_mod!(grammar);
 
-pub fn parse(source: &str) -> Result<Program, String> {
+pub fn parse(source: &str) -> Result<Program, Vec<ErrorRecovery<usize, Token, LexicalError>>> {
+    let mut errors = Vec::new();
+
     let lexer = Lexer::new(source);
     let parser = grammar::ProgramParser::new();
 
-    parser.parse(lexer).map_err(|e| format!("Parse error: {:?}", e))
+    match parser.parse(&mut errors, lexer) {
+        Err(error) => {
+            errors.push(ErrorRecovery { error, dropped_tokens: vec![] });
+            Err(errors)
+        }
+        Ok(res) => Ok(res),
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::{ast::*, parser};
+    use lalrpop_util::{ErrorRecovery, ParseError};
+
+    use crate::{
+        ast::*,
+        parser,
+        token::{LexicalError, Token},
+    };
 
     #[test]
-    fn test_parse_var() -> Result<(), String> {
+    fn test_parse_var() -> Result<(), Vec<ErrorRecovery<usize, Token, LexicalError>>> {
         let ast = parser::parse("var x = 42;")?;
 
         assert_eq!(ast.0.len(), 1);
@@ -45,5 +63,20 @@ mod test {
         );
 
         Ok(())
+    }
+
+    #[test]
+    fn test_error_recovery() {
+        let expected = ErrorRecovery {
+            error: ParseError::UnrecognizedToken {
+                token: (6, Token::Error, 7),
+                expected: vec!["\"=\"".to_string()],
+            },
+            dropped_tokens: vec![],
+        };
+
+        if let Err(errors) = parser::parse("var x != 42;") {
+            assert_eq!(errors, vec![expected])
+        }
     }
 }

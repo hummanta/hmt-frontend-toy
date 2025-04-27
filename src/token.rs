@@ -71,6 +71,8 @@ pub enum Token {
 
     #[token("/")]
     Div,
+
+    Error,
 }
 
 impl fmt::Display for Token {
