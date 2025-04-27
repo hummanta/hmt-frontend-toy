@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::num::ParseIntError;
+use std::{
+    fmt::{self, Display},
+    num::ParseIntError,
+};
+
+use lalrpop_util::{ErrorRecovery, ParseError as LalrpopParseError};
 
 #[derive(Default, Debug, Clone, PartialEq)]
 pub enum LexicalError {
@@ -21,8 +26,59 @@ pub enum LexicalError {
     InvalidToken,
 }
 
+impl fmt::Display for LexicalError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::InvalidInteger(err) => write!(f, "Invalid integer: {}", err),
+            Self::InvalidToken => write!(f, "Invalid token"),
+        }
+    }
+}
+
 impl From<ParseIntError> for LexicalError {
     fn from(err: ParseIntError) -> Self {
         LexicalError::InvalidInteger(err)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ParseError {
+    pub message: String,
+    pub note: Option<String>,
+}
+
+impl ParseError {
+    pub fn new<T: ToString>(message: T) -> Self {
+        Self { message: message.to_string(), note: None }
+    }
+
+    pub fn note<T: ToString>(mut self, note: T) -> Self {
+        self.note.replace(note.to_string());
+        self
+    }
+}
+
+impl<L: Display, T: Display, E: ToString> From<ErrorRecovery<L, T, E>> for ParseError {
+    #[inline]
+    fn from(value: ErrorRecovery<L, T, E>) -> Self {
+        value.error.into()
+    }
+}
+
+impl<L: Display, T: Display, E: ToString> From<LalrpopParseError<L, T, E>> for ParseError {
+    fn from(error: LalrpopParseError<L, T, E>) -> Self {
+        match error {
+            LalrpopParseError::InvalidToken { location: _ } => Self::new("invalid token"),
+            LalrpopParseError::UnrecognizedToken { token: (_l, token, _r), expected } => Self::new(
+                format!("unrecognised token '{}', expected {}", token, expected.join(", ")),
+            ),
+            LalrpopParseError::User { error } => Self::new(error.to_string()),
+            LalrpopParseError::ExtraToken { token } => {
+                Self::new(format!("extra token '{}' encountered", token.0))
+            }
+            LalrpopParseError::UnrecognizedEof { expected, location: _ } => {
+                Self::new(format!("unexpected end of file, expecting {}", expected.join(", ")))
+            }
+        }
     }
 }

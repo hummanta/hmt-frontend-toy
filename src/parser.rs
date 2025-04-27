@@ -12,35 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use lalrpop_util::{lalrpop_mod, ErrorRecovery};
+use std::iter::once;
 
-use crate::{ast::Program, error::LexicalError, lexer::Lexer, token::Token};
+use lalrpop_util::lalrpop_mod;
+
+use crate::{ast::Program, error::ParseError, lexer::Lexer};
 
 lalrpop_mod!(grammar);
 
-pub fn parse(source: &str) -> Result<Program, Vec<ErrorRecovery<usize, Token, LexicalError>>> {
-    let mut errors = Vec::new();
-
+/// Parses source into Program or returns syntax errors
+pub fn parse(source: &str) -> Result<Program, Vec<ParseError>> {
     let lexer = Lexer::new(source);
     let parser = grammar::ProgramParser::new();
+    let mut errors = Vec::new(); // Collected during parse
 
-    match parser.parse(&mut errors, lexer) {
-        Err(error) => {
-            errors.push(ErrorRecovery { error, dropped_tokens: vec![] });
-            Err(errors)
-        }
-        Ok(res) => Ok(res),
-    }
+    parser.parse(&mut errors, lexer).map_err(|err| {
+        errors
+            .into_iter() // Take errors
+            .map(Into::into) // Convert type
+            .chain(once(err.into())) // Add final error
+            .collect()
+    })
 }
 
 #[cfg(test)]
 mod test {
-    use lalrpop_util::{ErrorRecovery, ParseError};
+    use lalrpop_util::{ErrorRecovery, ParseError as LalrpopParseError};
 
-    use crate::{ast::*, error::LexicalError, parser, token::Token};
+    use crate::{
+        ast::*,
+        error::{LexicalError, ParseError},
+        parser,
+        token::Token,
+    };
 
     #[test]
-    fn test_parse_var() -> Result<(), Vec<ErrorRecovery<usize, Token, LexicalError>>> {
+    fn test_parse_var() -> Result<(), Vec<ParseError>> {
         let ast = parser::parse("var x = 42;")?;
 
         assert_eq!(ast.0.len(), 1);
@@ -59,8 +66,8 @@ mod test {
 
     #[test]
     fn test_error_recovery() {
-        let expected = ErrorRecovery {
-            error: ParseError::UnrecognizedToken {
+        let expected: ErrorRecovery<usize, Token, LexicalError> = ErrorRecovery {
+            error: LalrpopParseError::UnrecognizedToken {
                 token: (6, Token::Error, 7),
                 expected: vec!["\"=\"".to_string()],
             },
@@ -68,7 +75,7 @@ mod test {
         };
 
         if let Err(errors) = parser::parse("var x != 42;") {
-            assert_eq!(errors, vec![expected])
+            assert_eq!(errors, vec![expected.into()])
         }
     }
 }
