@@ -6,6 +6,7 @@ edition = "2021"
 
 [dependencies]
 ariadne = { version = "0.5.1", features = ["auto-color"] }
+clap = { version = "4.5.37", features = ["derive", "env"] }
 concolor = "0.1.1"
 lalrpop-util = "0.22.1"
 logos = "0.15.0"

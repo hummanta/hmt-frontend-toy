@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod args;
-pub mod ast;
-pub mod error;
-pub mod lexer;
-pub mod parser;
-pub mod token;
+use std::path::PathBuf;
+
+use clap::Parser;
+
+#[derive(Debug, Parser)]
+pub struct Args {
+    /// Path to the input file
+    #[arg(long)]
+    pub input: PathBuf,
+
+    /// Path to the output file
+    #[arg(long)]
+    pub output: PathBuf,
+}
