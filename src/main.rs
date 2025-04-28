@@ -12,6 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::{fs, process};
+
+use anyhow::{bail, Context, Result};
+use clap::Parser as _;
+
+use hmt_frontend_toy::{args, parser};
+
 fn main() {
-    unimplemented!()
+    if let Err(e) = run() {
+        eprintln!("Error: {e:?}");
+        process::exit(1);
+    }
+}
+
+fn run() -> Result<()> {
+    let args = args::Args::parse();
+
+    let source = fs::read_to_string(&args.input)
+        .context(format!("Failed to read input file: {}", args.input.display()))?;
+
+    let ast = match parser::parse(&source) {
+        Ok(ast) => ast,
+        Err(errors) => {
+            let reports = errors
+                .iter()
+                .map(|err| err.report(&source).context("Failed to generate error report"))
+                .collect::<Result<Vec<_>, _>>()?;
+            bail!("Parsing failed with {} errors:\n{}", errors.len(), reports.join("\n"));
+        }
+    };
+
+    println!("{ast:#?}");
+
+    Ok(())
 }
