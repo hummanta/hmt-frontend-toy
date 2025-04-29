@@ -25,4 +25,8 @@ pub struct Args {
     /// Path to the output file
     #[arg(long)]
     pub output: PathBuf,
+
+    /// Also print AST to console
+    #[arg(long)]
+    pub print_ast: bool,
 }

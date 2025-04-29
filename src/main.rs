@@ -17,7 +17,7 @@ use std::{fs, process};
 use anyhow::{bail, Context, Result};
 use clap::Parser as _;
 
-use hmt_frontend_toy::{args, parser};
+use hmt_frontend_toy::{args::Args, codegen::Codegen, parser};
 
 fn main() {
     if let Err(e) = run() {
@@ -27,7 +27,7 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    let args = args::Args::parse();
+    let args = Args::parse();
 
     let source = fs::read_to_string(&args.input)
         .context(format!("Failed to read input file: {}", args.input.display()))?;
@@ -43,7 +43,13 @@ fn run() -> Result<()> {
         }
     };
 
-    println!("{ast:#?}");
+    if args.print_ast {
+        println!("{ast:#?}");
+    }
+
+    let mut generator = Codegen::new();
+    generator.gen(&ast);
+    generator.write(&args.output);
 
     Ok(())
 }
