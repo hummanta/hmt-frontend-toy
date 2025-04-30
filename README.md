@@ -36,17 +36,19 @@ Cargo's global binary directory (`~/.cargo/bin/` by default).
 ## Usage
 
 ```text
-Usage: hmt-frontend-toy [OPTIONS]
+Usage: hmt-frontend-toy [OPTIONS] --input <INPUT> --output <OUTPUT>
 
 Options:
-      --path <PATH>  The path to the file or directory to parsing.
-  -h, --help         Print help
+      --input <INPUT>    Path to the input file
+      --output <OUTPUT>  Path to the output file
+      --print-ast        Also print AST to console
+  -h, --help             Print help
 ```
 
 Example:
 
 ```bash
-hmt-frontend-toy --path path/to/file
+hmt-frontend-toy --input samples/toy/add.toy --ouput add.clif
 ```
 
 ## Development
