@@ -12,24 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use cranelift::prelude::{types::I64, EntityRef, InstBuilder, Value};
-
-use crate::emit::{EmitContext, Emitter};
-
 #[derive(Clone, Debug)]
 pub struct Program(pub Vec<Statement>);
 
-impl Emitter for Program {
-    fn emit(&self, ctx: &mut EmitContext) -> Value {
-        let entry = ctx.builder.create_block();
-        ctx.builder.switch_to_block(entry);
+impl Program {
+    pub fn accept<T, V: Visitor<T>>(&self, visitor: &mut V) -> T {
+        visitor.visit_program(self)
+    }
 
-        for stmt in &self.0 {
-            stmt.emit(ctx);
-        }
-
-        ctx.builder.ins().return_(&[]);
-        Value::new(0)
+    pub fn iter(&self) -> impl Iterator<Item = &Statement> {
+        self.0.iter()
     }
 }
 
@@ -39,12 +31,9 @@ pub enum Statement {
     Print(PrintStatement),
 }
 
-impl Emitter for Statement {
-    fn emit(&self, ctx: &mut EmitContext) -> Value {
-        match self {
-            Statement::Variable(stmt) => stmt.emit(ctx),
-            Statement::Print(stmt) => stmt.emit(ctx),
-        }
+impl Statement {
+    pub fn accept<T, V: Visitor<T>>(&self, visitor: &mut V) -> T {
+        visitor.visit_statement(self)
     }
 }
 
@@ -54,13 +43,9 @@ pub struct VarStatement {
     pub value: Box<Expression>,
 }
 
-impl Emitter for VarStatement {
-    fn emit(&self, ctx: &mut EmitContext) -> Value {
-        let val = self.value.emit(ctx);
-        let var = ctx.declare_var(&self.name);
-        ctx.builder.declare_var(var, I64);
-        ctx.builder.def_var(var, val);
-        val
+impl VarStatement {
+    pub fn accept<T, V: Visitor<T>>(&self, visitor: &mut V) -> T {
+        visitor.visit_var_statement(self)
     }
 }
 
@@ -69,9 +54,9 @@ pub struct PrintStatement {
     pub value: Box<Expression>,
 }
 
-impl Emitter for PrintStatement {
-    fn emit(&self, ctx: &mut EmitContext) -> Value {
-        self.value.emit(ctx)
+impl PrintStatement {
+    pub fn accept<T, V: Visitor<T>>(&self, visitor: &mut V) -> T {
+        visitor.visit_print_statement(self)
     }
 }
 
@@ -90,26 +75,16 @@ pub enum Operator {
     Div,
 }
 
-impl Emitter for Expression {
-    fn emit(&self, ctx: &mut EmitContext) -> Value {
-        match self {
-            Expression::Integer(num) => ctx.builder.ins().iconst(I64, *num),
-            Expression::Variable(name) => {
-                let var = ctx
-                    .get_variable(name)
-                    .unwrap_or_else(|| panic!("Undefined variable: {}", name));
-                ctx.builder.use_var(var)
-            }
-            Expression::BinaryOperation { lhs, operator, rhs } => {
-                let (lhs, rhs) = (lhs.emit(ctx), rhs.emit(ctx));
-
-                match operator {
-                    Operator::Add => ctx.builder.ins().iadd(lhs, rhs),
-                    Operator::Sub => ctx.builder.ins().isub(lhs, rhs),
-                    Operator::Mul => ctx.builder.ins().imul(lhs, rhs),
-                    Operator::Div => ctx.builder.ins().sdiv(lhs, rhs),
-                }
-            }
-        }
+impl Expression {
+    pub fn accept<T, V: Visitor<T>>(&self, visitor: &mut V) -> T {
+        visitor.visit_expression(self)
     }
+}
+
+pub trait Visitor<T> {
+    fn visit_program(&mut self, program: &Program) -> T;
+    fn visit_statement(&mut self, stmt: &Statement) -> T;
+    fn visit_var_statement(&mut self, stmt: &VarStatement) -> T;
+    fn visit_print_statement(&mut self, stmt: &PrintStatement) -> T;
+    fn visit_expression(&mut self, expr: &Expression) -> T;
 }
