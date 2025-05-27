@@ -11,6 +11,11 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
+    groups:
+      lalrpop:
+        patterns:
+          - lalrpop
+          - lalrpop-util
 
   - package-ecosystem: "github-actions"
     directory: "/"
