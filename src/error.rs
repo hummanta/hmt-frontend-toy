@@ -30,7 +30,7 @@ pub enum LexicalError {
 impl fmt::Display for LexicalError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::InvalidInteger(err) => write!(f, "Invalid integer: {}", err),
+            Self::InvalidInteger(err) => write!(f, "Invalid integer: {err}"),
             Self::InvalidToken => write!(f, "Invalid token"),
         }
     }

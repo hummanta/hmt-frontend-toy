@@ -96,7 +96,7 @@ impl Visitor<Value> for CraneliftEmitter<'_> {
                 let var = self
                     .ctx
                     .get_variable(name)
-                    .unwrap_or_else(|| panic!("Undefined variable: {}", name));
+                    .unwrap_or_else(|| panic!("Undefined variable: {name}"));
                 self.ctx.builder.use_var(var)
             }
             Expression::BinaryOperation { lhs, operator, rhs } => {
