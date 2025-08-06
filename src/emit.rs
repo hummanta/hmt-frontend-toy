@@ -80,7 +80,7 @@ impl Visitor<Value> for CraneliftEmitter<'_> {
     fn visit_var_statement(&mut self, stmt: &VarStatement) -> Value {
         let val = stmt.value.accept(self);
         let var = self.ctx.declare_var(&stmt.name);
-        self.ctx.builder.declare_var(var, I64);
+        self.ctx.builder.declare_var(I64);
         self.ctx.builder.def_var(var, val);
         val
     }
