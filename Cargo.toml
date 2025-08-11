@@ -11,7 +11,7 @@ clap = { version = "4.5.42", features = ["derive", "env"] }
 concolor = "0.1.1"
 cranelift = { version = "0.122.0", features = ["module", "object"] }
 lalrpop-util = "0.22.2"
-logos = "0.15.0"
+logos = "0.15.1"
 target-lexicon = "0.13.2"
 
 [build-dependencies]
