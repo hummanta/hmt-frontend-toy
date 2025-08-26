@@ -5,7 +5,7 @@ version = "0.6.8"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.98"
+anyhow = "1.0.99"
 ariadne = { version = "0.5.1", features = ["auto-color"] }
 clap = { version = "4.5.43", features = ["derive", "env"] }
 concolor = "0.1.1"
