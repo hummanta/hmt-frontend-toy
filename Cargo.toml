@@ -7,7 +7,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.100"
 ariadne = { version = "0.5.1", features = ["auto-color"] }
-clap = { version = "4.5.49", features = ["derive", "env"] }
+clap = { version = "4.5.50", features = ["derive", "env"] }
 concolor = "0.1.1"
 cranelift = { version = "0.125.3", features = ["module", "object"] }
 lalrpop-util = "0.22.2"
