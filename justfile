@@ -60,7 +60,6 @@ manifest version="local":
 
 # Run all commend in the local environment
 all:
-    just clean
     just check
     just build dev
     just package dev "" local
