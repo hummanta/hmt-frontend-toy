@@ -12,7 +12,7 @@ concolor = "0.1.1"
 cranelift = { version = "0.126.0", features = ["module", "object"] }
 lalrpop-util = "0.22.2"
 logos = "0.16.0"
-target-lexicon = "0.13.3"
+target-lexicon = "0.13.4"
 
 [build-dependencies]
 lalrpop = "0.22.2"
