@@ -1,18 +1,18 @@
 [package]
 name = "hmt-frontend-toy"
 description = "Parsing the Toy source code and generating the Cranelift IR"
-version = "0.6.13"
+version = "0.6.14"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.100"
-ariadne = { version = "0.6.0", features = ["auto-color"] }
-clap = { version = "4.5.53", features = ["derive", "env"] }
-concolor = "0.1.1"
-cranelift = { version = "0.126.0", features = ["module", "object"] }
-lalrpop-util = "0.22.2"
-logos = "0.16.0"
-target-lexicon = "0.13.4"
+anyhow = "1.0"
+ariadne = { version = "0.6", features = ["auto-color"] }
+clap = { version = "4.5", features = ["derive", "env"] }
+concolor = "0.1"
+cranelift = { version = "0.127", features = ["module", "object"] }
+lalrpop-util = "0.22"
+logos = "0.16"
+target-lexicon = "0.13"
 
 [build-dependencies]
-lalrpop = "0.22.2"
+lalrpop = "0.22"
