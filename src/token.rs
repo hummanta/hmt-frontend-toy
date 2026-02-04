@@ -19,7 +19,7 @@ use logos::Logos;
 use crate::error::LexicalError;
 
 #[derive(Logos, Clone, Debug, PartialEq)]
-#[logos(skip r"[ \t\n\f]+", skip r"#.*\n?", error = LexicalError)]
+#[logos(error = LexicalError, skip r"[ \t\n\f]+", skip(r"//[^\n]*", allow_greedy = true))]
 pub enum Token {
     // Keywords
     #[token("var")]
