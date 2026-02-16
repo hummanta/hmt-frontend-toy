@@ -10,9 +10,9 @@ ariadne = { version = "0.6", features = ["auto-color"] }
 clap = { version = "4.5", features = ["derive", "env"] }
 concolor = "0.1"
 cranelift = { version = "0.128", features = ["module", "object"] }
-lalrpop-util = "0.22"
+lalrpop-util = "0.23"
 logos = "0.16"
 target-lexicon = "0.13"
 
 [build-dependencies]
-lalrpop = "0.22"
+lalrpop = "0.23"
