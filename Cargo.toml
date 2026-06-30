@@ -9,7 +9,7 @@ anyhow = "1.0"
 ariadne = { version = "0.6", features = ["auto-color"] }
 clap = { version = "4.6", features = ["derive", "env"] }
 concolor = "0.1"
-cranelift = { version = "0.132", features = ["module", "object"] }
+cranelift = { version = "0.133", features = ["module", "object"] }
 lalrpop-util = "0.23"
 logos = "0.16"
 target-lexicon = "0.13"
