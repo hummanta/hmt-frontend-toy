@@ -1,0 +1,21 @@
+version = "v0.7.8"
+
+[artifacts.x86_64-apple-darwin]
+url = "https://github.com/hummanta/hmt-frontend-toy/releases/download/v0.7.8/hmt-frontend-toy-v0.7.8-x86_64-apple-darwin.tar.gz"
+hash = "f02ad734e98de11cf13f5c59d07d0701895bb7dd30e4079b0556b68df9a90e19"
+
+[artifacts.x86_64-unknown-linux-gnu]
+url = "https://github.com/hummanta/hmt-frontend-toy/releases/download/v0.7.8/hmt-frontend-toy-v0.7.8-x86_64-unknown-linux-gnu.tar.gz"
+hash = "4df67a3846365f17ab78fbdcd5e9f3adf000332d5bacbd311285815244db947f"
+
+[artifacts.aarch64-apple-darwin]
+url = "https://github.com/hummanta/hmt-frontend-toy/releases/download/v0.7.8/hmt-frontend-toy-v0.7.8-aarch64-apple-darwin.tar.gz"
+hash = "c431c3149cd0e8d4510bdb9310a4bbfc8651d27c755a35e936eb6ae85d8871ed"
+
+[artifacts.x86_64-pc-windows-msvc]
+url = "https://github.com/hummanta/hmt-frontend-toy/releases/download/v0.7.8/hmt-frontend-toy-v0.7.8-x86_64-pc-windows-msvc.tar.gz"
+hash = "a46ad5e2648dc07e120cc8b0d0f96d10536dfe882cf45457509cc89aa12045ee"
+
+[artifacts.aarch64-unknown-linux-gnu]
+url = "https://github.com/hummanta/hmt-frontend-toy/releases/download/v0.7.8/hmt-frontend-toy-v0.7.8-aarch64-unknown-linux-gnu.tar.gz"
+hash = "ca387acb552f839a72d3b08c146d5752ca55d236074cdbcb0f45c79a80a81770"
